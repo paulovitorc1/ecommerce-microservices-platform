@@ -1,0 +1,17 @@
+# Arquivos de pacote
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Maven
+/m2/
+/target/
+
+# Dados de volume do PostgreSQL (Arquivos binários do banco de dados)
+/servicos/database/data/
