@@ -2,6 +2,7 @@ package br.com.ecommerce.produtos.service;
 
 import br.com.ecommerce.produtos.model.Produto;
 import br.com.ecommerce.produtos.repository.ProdutoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,17 @@ public class ProdutoService {
 
     public Optional<Produto> obterPorCodigo(Long codigo) {
         return repository.findById(codigo);
+    }
+
+    public Produto atualizarPorCodigo(Long codigo, Produto atualizado) {
+        return repository.findById(codigo)
+                .map(produtoExistente -> {
+
+                    // Atualiza os campos desejados
+                    produtoExistente.setNome(atualizado.getNome());
+                    produtoExistente.setValorUnitario(atualizado.getValorUnitario());
+                    return repository.save(produtoExistente);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado: " + codigo));
     }
 }
