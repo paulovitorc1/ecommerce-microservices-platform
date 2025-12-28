@@ -1,5 +1,7 @@
 package br.com.ecommerce.pedidos.service;
 
+import br.com.ecommerce.pedidos.client.ClientesClient;
+import br.com.ecommerce.pedidos.client.ProdutosClient;
 import br.com.ecommerce.pedidos.client.ServicoBancarioClient;
 import br.com.ecommerce.pedidos.controller.dto.NovoPedidoDTO;
 import br.com.ecommerce.pedidos.model.DadosPagamento;
@@ -8,6 +10,7 @@ import br.com.ecommerce.pedidos.model.Pedido;
 import br.com.ecommerce.pedidos.model.enums.StatusPedido;
 import br.com.ecommerce.pedidos.model.enums.TipoPagamento;
 import br.com.ecommerce.pedidos.model.exception.ItemNaoEncontradoException;
+import br.com.ecommerce.pedidos.publisher.PagamentoPublisher;
 import br.com.ecommerce.pedidos.repository.ItemPedidoRepository;
 import br.com.ecommerce.pedidos.repository.PedidoRepository;
 import br.com.ecommerce.pedidos.validator.PedidoValidator;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,6 +33,9 @@ public class PedidoService {
     private final ItemPedidoRepository itemPedidoRepository;
     private final PedidoValidator validator;
     private final ServicoBancarioClient servicoBancarioClient;
+    private final ClientesClient apiClientes;
+    private final ProdutosClient apiProdutos;
+    private final PagamentoPublisher pagamentoPublisher;
 
     @Transactional
     public Pedido criar(Pedido pedido) {
@@ -60,12 +67,19 @@ public class PedidoService {
         Pedido pedido = pedidoEncontrado.get();
 
         if (sucesso) {
-            pedido.setStatus(StatusPedido.PAGO);
+            prepararEPublicarPedidoPago(pedido);
         } else {
             pedido.setStatus(StatusPedido.ERRO_PAGAMENTO);
             pedido.setObservacoes(observacoes);
         }
         repository.save(pedido);
+    }
+
+    private void prepararEPublicarPedidoPago(Pedido pedido) {
+        pedido.setStatus(StatusPedido.PAGO);
+        carregarDadosCliente(pedido);
+        carregarItensPedido(pedido);
+        pagamentoPublisher.pubicar(pedido);
     }
 
     @Transactional
@@ -92,4 +106,30 @@ public class PedidoService {
 
         repository.save(pedido);
     }
+
+    public Optional<Pedido> carregarDadosCompletosPedido(Long codigo){
+        Optional<Pedido> pedido = repository.findById(codigo);
+        pedido.ifPresent(this::carregarDadosCliente);
+        pedido.ifPresent(this::carregarItensPedido);
+        return pedido;
+    }
+
+    public void carregarDadosCliente(Pedido pedido){
+        Long codigoCliente = pedido.getCodigoCliente();
+        var response = apiClientes.obterPorCodigo(codigoCliente);
+        pedido.setDadosCliente(response.getBody());
+    }
+
+    public void carregarItensPedido(Pedido pedido){
+        List<ItemPedido> itens = itemPedidoRepository.findByPedido(pedido);
+        pedido.setItens(itens);
+        pedido.getItens().forEach(this::carregarDadosProduto);
+    }
+
+    public void carregarDadosProduto(ItemPedido item){
+        Long codigoProduto = item.getCodigoProduto();
+        var response = apiProdutos.obterPorCodigo(codigoProduto);
+        item.setNome(response.getBody().nome());
+    }
+
 }

@@ -9,5 +9,6 @@ public record ClienteRepresentation(
         String logradouro,
         String numero,
         String bairro,
+        String email,
         String telefone) {
 }

@@ -1,5 +1,6 @@
 package br.com.ecommerce.pedidos.model;
 
+import br.com.ecommerce.pedidos.client.representation.ClienteRepresentation;
 import br.com.ecommerce.pedidos.controller.dto.DadosPagamentoDTO;
 import br.com.ecommerce.pedidos.model.enums.StatusPedido;
 import jakarta.persistence.*;
@@ -52,5 +53,8 @@ public class Pedido {
 
     @OneToMany(mappedBy = "pedido")
     private List<ItemPedido> itens;
+
+    @Transient
+    private ClienteRepresentation dadosCliente;
 
 }
