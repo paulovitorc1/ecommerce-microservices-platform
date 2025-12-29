@@ -10,6 +10,7 @@ public interface DetalhePedidoMapper {
 
     @Mapping(source = "codigo", target = "codigo")
     @Mapping(source = "codigoCliente", target = "codigoCliente")
+    @Mapping(source = "dadosCliente.nome", target = "nome")
     @Mapping(source = "dadosCliente.cpf", target = "cpf")
     @Mapping(source = "dadosCliente.logradouro", target = "logradouro")
     @Mapping(source = "dadosCliente.numero", target = "numero")
