@@ -1,6 +1,6 @@
-package br.com.ecommerce.pedidos.publisher.representation;
+package br.com.ecommerce.faturamento.subscriber.representation;
 
-import br.com.ecommerce.pedidos.model.enums.StatusPedido;
+import br.com.ecommerce.faturamento.publisher.representation.StatusPedido;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +18,7 @@ public record DetalhePedidoRepresentation(
         String dataPedido,
         BigDecimal total,
         StatusPedido status,
-        String urlNotaFiscal,
+        String urlNf,
         String codigoRastreio,
         List<DetalheItemPedidoRepresentation> itens
         ) {

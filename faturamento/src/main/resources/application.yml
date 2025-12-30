@@ -1,6 +1,18 @@
 spring:
   application:
     name: faturamento
+  kafka:
+    bootstrap-servers: 'http://localhost:29092'
+    consumer:
+      group-id: ecommerce-faturamento
+      auto-offset-reset: earliest
+
+ecommerce:
+  config:
+    kafka:
+      topics:
+        pedidos-pagos: 'ecommerce.pedidos-pagos'
+        pedidos-faturados: 'ecommerce.pedidos-faturados'
 
 server:
   port: 8083
