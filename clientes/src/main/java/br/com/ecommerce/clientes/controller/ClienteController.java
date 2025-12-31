@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -42,15 +43,14 @@ public class ClienteController {
     }
 
     @DeleteMapping("{codigo}")
-    public ResponseEntity<?> deletarPorCodigo(@PathVariable Long codigo) {
-        try {
-            service.deletarPorCodigo(codigo);
-            return ResponseEntity.ok("Cliente deletado com sucesso. ID: " + codigo);
-        }
-        catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
+    public ResponseEntity<Void> deletar(@PathVariable("codigo") Long codigo) {
+        var cliente = service.obterPorCodigo(codigo)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Cliente inexistente."
+                ));
+        service.deletar(cliente);
+        return ResponseEntity.noContent().build();
     }
 
 }

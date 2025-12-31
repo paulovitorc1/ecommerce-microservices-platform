@@ -30,11 +30,8 @@ public class ClienteService {
         return repository.findAll();
     }
 
-    public void deletarPorCodigo(Long codigo) {
-        boolean codigoExiste = repository.existsById(codigo);
-        if (!codigoExiste) {
-            throw new EntityNotFoundException("Cliente não encontrado para o código: " + codigo);
-        }
-        repository.deleteById(codigo);
+    public void deletar(Cliente cliente) {
+        cliente.setAtivo(false);
+        repository.save(cliente);
     }
 }

@@ -2,6 +2,8 @@ package br.com.ecommerce.produtos.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -19,5 +21,13 @@ public class Produto {
 
     @Column(name = "valor_unitario", nullable = false, precision = 16, scale = 2)
     private BigDecimal valorUnitario;
+
+    @Column(name = "ativo")
+    private boolean ativo;
+
+    @PrePersist
+    public void prePersist() {
+        setAtivo(true);
+    }
 
 }

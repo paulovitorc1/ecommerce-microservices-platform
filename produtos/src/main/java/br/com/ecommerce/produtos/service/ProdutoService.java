@@ -33,4 +33,10 @@ public class ProdutoService {
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado: " + codigo));
     }
+
+
+    public void deletar(Produto produto) {
+        produto.setAtivo(false);
+        repository.save(produto);
+    }
 }
