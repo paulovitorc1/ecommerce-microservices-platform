@@ -4,6 +4,7 @@
 *.ear
 *.zip
 *.tar.gz
+*.mini
 
 # IntelliJ IDEA
 .idea/
